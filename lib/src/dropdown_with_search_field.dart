@@ -132,7 +132,7 @@ class _DropdownMenuItemButtonState<T>
   }
 
   void _handleOnTap() {
-    final DropdownMenuItemWithSearchField<T> dropdownMenuItem =
+    final DropdownMenuItemForSearchField<T> dropdownMenuItem =
         widget.route.items[widget.itemIndex].item!;
 
     dropdownMenuItem.onTap?.call();
@@ -155,7 +155,7 @@ class _DropdownMenuItemButtonState<T>
 
   @override
   Widget build(BuildContext context) {
-    final DropdownMenuItemWithSearchField<T> dropdownMenuItem =
+    final DropdownMenuItemForSearchField<T> dropdownMenuItem =
         widget.route.items[widget.itemIndex].item!;
     final CurvedAnimation opacity;
     final double unit = 0.5 / (widget.route.items.length + 1.5);
@@ -271,7 +271,9 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
     final List<Widget> children = <Widget>[
       for (int itemIndex = 0; itemIndex < route.items.length; ++itemIndex)
         if (searchKeyword.isEmpty ||
-            route.items[itemIndex].item!.searchKeyword.contains(searchKeyword))
+            route.items[itemIndex].item!.searchKeyword
+                .toLowerCase()
+                .contains(searchKeyword.toLowerCase()))
           _DropdownMenuItemButton<T>(
             route: widget.route,
             padding: widget.padding,
@@ -709,7 +711,7 @@ class _MenuItem<T> extends SingleChildRenderObjectWidget {
   }) : super(child: item);
 
   final ValueChanged<Size> onLayout;
-  final DropdownMenuItemWithSearchField<T>? item;
+  final DropdownMenuItemForSearchField<T>? item;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -779,11 +781,11 @@ class _DropdownMenuItemContainer extends StatelessWidget {
 ///
 /// The type `T` is the type of the value the entry represents. All the entries
 /// in a given menu must represent values with consistent types.
-class DropdownMenuItemWithSearchField<T> extends _DropdownMenuItemContainer {
+class DropdownMenuItemForSearchField<T> extends _DropdownMenuItemContainer {
   /// Creates an item for a dropdown menu.
   ///
   /// The [child] argument is required.
-  const DropdownMenuItemWithSearchField({
+  const DropdownMenuItemForSearchField({
     super.key,
     this.onTap,
     this.value,
@@ -823,7 +825,7 @@ class DropdownMenuItemWithSearchField<T> extends _DropdownMenuItemContainer {
 ///
 /// The type `T` is the type of the [value] that each dropdown item represents.
 /// All the entries in a given menu must represent values with consistent types.
-/// Typically, an enum is used. Each [DropdownMenuItemWithSearchField] in [items] must be
+/// Typically, an enum is used. Each [DropdownMenuItemForSearchField] in [items] must be
 /// specialized with that same type argument.
 ///
 /// The [onChanged] callback should update a state variable that defines the
@@ -854,7 +856,7 @@ class DropdownMenuItemWithSearchField<T> extends _DropdownMenuItemContainer {
 /// See also:
 ///
 ///  * [DropdownButtonFormField], which integrates with the [Form] widget.
-///  * [DropdownMenuItemWithSearchField], the class used to represent the [items].
+///  * [DropdownMenuItemForSearchField], the class used to represent the [items].
 ///  * [DropdownButtonHideUnderline], which prevents its descendant dropdown buttons
 ///    from displaying their underlines.
 ///  * [ElevatedButton], [TextButton], ordinary buttons that trigger a single action.
@@ -863,7 +865,7 @@ class DropdownButtonWithSearchField<T> extends StatefulWidget {
   /// Creates a dropdown button.
   ///
   /// The [items] must have distinct values. If [value] isn't null then it
-  /// must be equal to one of the [DropdownMenuItemWithSearchField] values. If [items] or
+  /// must be equal to one of the [DropdownMenuItemForSearchField] values. If [items] or
   /// [onChanged] is null, the button will be disabled, the down arrow
   /// will be greyed out.
   ///
@@ -916,7 +918,7 @@ class DropdownButtonWithSearchField<T> extends StatefulWidget {
           items == null ||
               items.isEmpty ||
               value == null ||
-              items.where((DropdownMenuItemWithSearchField<T> item) {
+              items.where((DropdownMenuItemForSearchField<T> item) {
                     return item.value == value;
                   }).length ==
                   1,
@@ -964,7 +966,7 @@ class DropdownButtonWithSearchField<T> extends StatefulWidget {
           items == null ||
               items.isEmpty ||
               value == null ||
-              items.where((DropdownMenuItemWithSearchField<T> item) {
+              items.where((DropdownMenuItemForSearchField<T> item) {
                     return item.value == value;
                   }).length ==
                   1,
@@ -983,9 +985,9 @@ class DropdownButtonWithSearchField<T> extends StatefulWidget {
   /// If the [onChanged] callback is null or the list of items is null
   /// then the dropdown button will be disabled, i.e. its arrow will be
   /// displayed in grey and it will not respond to input.
-  final List<DropdownMenuItemWithSearchField<T>>? items;
+  final List<DropdownMenuItemForSearchField<T>>? items;
 
-  /// The value of the currently selected [DropdownMenuItemWithSearchField].
+  /// The value of the currently selected [DropdownMenuItemForSearchField].
   ///
   /// If [value] is null and the button is enabled, [hint] will be displayed
   /// if it is non-null.
@@ -1031,20 +1033,20 @@ class DropdownButtonWithSearchField<T> extends StatefulWidget {
   final VoidCallback? onTap;
 
   /// A builder to customize the dropdown buttons corresponding to the
-  /// [DropdownMenuItemWithSearchField]s in [items].
+  /// [DropdownMenuItemForSearchField]s in [items].
   ///
-  /// When a [DropdownMenuItemWithSearchField] is selected, the widget that will be displayed
-  /// from the list corresponds to the [DropdownMenuItemWithSearchField] of the same index
+  /// When a [DropdownMenuItemForSearchField] is selected, the widget that will be displayed
+  /// from the list corresponds to the [DropdownMenuItemForSearchField] of the same index
   /// in [items].
   ///
   /// {@tool dartpad}
   /// This sample shows a `DropdownButton` with a button with [Text] that
-  /// corresponds to but is unique from [DropdownMenuItemWithSearchField].
+  /// corresponds to but is unique from [DropdownMenuItemForSearchField].
   ///
   /// ** See code in examples/api/lib/material/dropdown/dropdown_button.selected_item_builder.0.dart **
   /// {@end-tool}
   ///
-  /// If this callback is null, the [DropdownMenuItemWithSearchField] from [items]
+  /// If this callback is null, the [DropdownMenuItemForSearchField] from [items]
   /// that matches [value] will be displayed.
   final DropdownButtonBuilder? selectedItemBuilder;
 
@@ -1197,7 +1199,8 @@ class DropdownButtonWithSearchField<T> extends StatefulWidget {
 }
 
 class _DropdownButtonWithSearchFieldState<T>
-    extends State<DropdownButtonWithSearchField<T>> with WidgetsBindingObserver {
+    extends State<DropdownButtonWithSearchField<T>>
+    with WidgetsBindingObserver {
   int? _selectedIndex;
   _DropdownRoute<T>? _dropdownRoute;
   Orientation? _lastOrientation;
@@ -1272,7 +1275,7 @@ class _DropdownButtonWithSearchFieldState<T>
         widget.items!.isEmpty ||
         (widget.value == null &&
             widget.items!
-                .where((DropdownMenuItemWithSearchField<T> item) =>
+                .where((DropdownMenuItemForSearchField<T> item) =>
                     item.enabled && item.value == widget.value)
                 .isEmpty)) {
       _selectedIndex = null;
@@ -1280,7 +1283,7 @@ class _DropdownButtonWithSearchFieldState<T>
     }
 
     assert(widget.items!
-            .where((DropdownMenuItemWithSearchField<T> item) =>
+            .where((DropdownMenuItemForSearchField<T> item) =>
                 item.value == widget.value)
             .length ==
         1);
@@ -1567,7 +1570,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
   /// `autofocus`, and `decoration`  parameters must not be null.
   DropdownButtonFormField({
     super.key,
-    required List<DropdownMenuItemWithSearchField<T>>? items,
+    required List<DropdownMenuItemForSearchField<T>>? items,
     DropdownButtonBuilder? selectedItemBuilder,
     T? value,
     Widget? hint,
@@ -1601,7 +1604,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
           items == null ||
               items.isEmpty ||
               value == null ||
-              items.where((DropdownMenuItemWithSearchField<T> item) {
+              items.where((DropdownMenuItemForSearchField<T> item) {
                     return item.value == value;
                   }).length ==
                   1,
@@ -1627,7 +1630,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
 
             final bool showSelectedItem = items != null &&
                 items
-                    .where((DropdownMenuItemWithSearchField<T> item) =>
+                    .where((DropdownMenuItemForSearchField<T> item) =>
                         item.value == state.value)
                     .isNotEmpty;
             bool isHintOrDisabledHintAvailable() {

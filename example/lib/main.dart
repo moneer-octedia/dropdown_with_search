@@ -46,12 +46,12 @@ class _MyAppState extends State<MyApp> {
                     });
                   },
                   items: [
-                    DropdownMenuItemWithSearchField(
+                    DropdownMenuItemForSearchField(
                       child: Text('item one'),
                       searchKeyword: 'item one',
                       value: 0,
                     ),
-                    DropdownMenuItemWithSearchField(
+                    DropdownMenuItemForSearchField(
                       child: Text('item two'),
                       searchKeyword: 'item two',
                       value: 1,
