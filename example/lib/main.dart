@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
               children: [
                 Text('Dropdown with search'),
                 const SizedBox(height: 8),
-                DropdownButton<int>(
+                DropdownButtonWithSearch<int>(
                   isDense: true,
                   value: value,
                   onChanged: (newValue) {
@@ -46,12 +46,12 @@ class _MyAppState extends State<MyApp> {
                     });
                   },
                   items: [
-                    DropdownMenuItem(
+                    DropdownMenuItemWithSearch(
                       child: Text('item one'),
                       searchKeyword: 'item one',
                       value: 0,
                     ),
-                    DropdownMenuItem(
+                    DropdownMenuItemWithSearch(
                       child: Text('item two'),
                       searchKeyword: 'item two',
                       value: 1,
