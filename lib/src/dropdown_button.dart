@@ -1,13 +1,18 @@
+library dropdown_button;
+
 import 'dart:math' as math;
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    hide DropdownMenuItem, DropdownButtonBuilder;
 
+part 'everything.dart';
 
-const double _kDenseButtonHeight = 24.0;
 const EdgeInsets _kMenuItemPadding = EdgeInsets.symmetric(horizontal: 16.0);
-const EdgeInsetsGeometry _kAlignedButtonPadding = EdgeInsetsDirectional.only(start: 16.0, end: 4.0);
-const EdgeInsets _kUnalignedButtonPadding = EdgeInsets.zero;
 const EdgeInsets _kAlignedMenuMargin = EdgeInsets.zero;
-const EdgeInsetsGeometry _kUnalignedMenuMargin = EdgeInsetsDirectional.only(start: 16.0, end: 24.0);
 
 class DropdownButton<T> extends StatefulWidget {
   /// Creates a dropdown button.
@@ -59,21 +64,20 @@ class DropdownButton<T> extends StatefulWidget {
     this.borderRadius,
     // When adding new arguments, consider adding similar arguments to
     // DropdownButtonFormField.
-  }) : assert(items == null || items.isEmpty || value == null ||
-      items.where((DropdownMenuItem<T> item) {
-        return item.value == value;
-      }).length == 1,
-  "There should be exactly one item with [DropdownButton]'s value: "
-      '$value. \n'
-      'Either zero or 2 or more [DropdownMenuItem]s were detected '
-      'with the same value',
-  ),
-        assert(elevation != null),
-        assert(iconSize != null),
-        assert(isDense != null),
-        assert(isExpanded != null),
-        assert(autofocus != null),
-        assert(itemHeight == null || itemHeight >=  kMinInteractiveDimension);
+  })  : assert(
+          items == null ||
+              items.isEmpty ||
+              value == null ||
+              items.where((DropdownMenuItem<T> item) {
+                    return item.value == value;
+                  }).length ==
+                  1,
+          "There should be exactly one item with [DropdownButton]'s value: "
+          '$value. \n'
+          'Either zero or 2 or more [DropdownMenuItem]s were detected '
+          'with the same value',
+        ),
+        assert(itemHeight == null || itemHeight >= kMinInteractiveDimension);
 
   /// The list of items the user can select.
   ///
@@ -91,7 +95,6 @@ class DropdownButton<T> extends StatefulWidget {
   /// if it is non-null. If [disabledHint] is null, then [hint] will be displayed
   /// if it is non-null.
   final T? value;
-
 
   /// {@template flutter.material.dropdownButton.onChanged}
   /// Called when the user selects an item.
@@ -155,7 +158,6 @@ class DropdownButton<T> extends StatefulWidget {
   /// Defaults to the [TextTheme.titleMedium] value of the current
   /// [ThemeData.textTheme] of the current [Theme].
   final TextStyle? style;
-
 
   /// The widget to use for the drop-down button's icon.
   ///
@@ -268,9 +270,10 @@ class DropdownButton<T> extends StatefulWidget {
   State<DropdownButton<T>> createState() => _DropdownButtonState<T>();
 }
 
-class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindingObserver {
+class _DropdownButtonState<T> extends State<DropdownButton<T>>
+    with WidgetsBindingObserver {
   int? _selectedIndex;
-  // _DropdownRoute<T>? _dropdownRoute;
+  _DropdownRoute<T>? _dropdownRoute;
   Orientation? _lastOrientation;
   FocusNode? _internalNode;
   FocusNode? get focusNode => widget.focusNode ?? _internalNode;
@@ -300,11 +303,11 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
     super.dispose();
   }
 
-  // void _removeDropdownRoute() {
-  //   _dropdownRoute?._dismiss();
-  //   _dropdownRoute = null;
-  //   _lastOrientation = null;
-  // }
+  void _removeDropdownRoute() {
+    _dropdownRoute?._dismiss();
+    _dropdownRoute = null;
+    _lastOrientation = null;
+  }
 
   void _handleFocusChanged() {
     if (_hasPrimaryFocus != focusNode!.hasPrimaryFocus) {
@@ -313,7 +316,6 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
       });
     }
   }
-
 
   @override
   void didUpdateWidget(DropdownButton<T> oldWidget) {
@@ -330,17 +332,21 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
   }
 
   void _updateSelectedIndex() {
-    if (widget.items == null
-        || widget.items!.isEmpty
-        || (widget.value == null &&
+    if (widget.items == null ||
+        widget.items!.isEmpty ||
+        (widget.value == null &&
             widget.items!
-                .where((DropdownMenuItem<T> item) => item.enabled && item.value == widget.value)
+                .where((DropdownMenuItem<T> item) =>
+                    item.enabled && item.value == widget.value)
                 .isEmpty)) {
       _selectedIndex = null;
       return;
     }
 
-    assert(widget.items!.where((DropdownMenuItem<T> item) => item.value == widget.value).length == 1);
+    assert(widget.items!
+            .where((DropdownMenuItem<T> item) => item.value == widget.value)
+            .length ==
+        1);
     for (int itemIndex = 0; itemIndex < widget.items!.length; itemIndex++) {
       if (widget.items![itemIndex].value == widget.value) {
         _selectedIndex = itemIndex;
@@ -349,107 +355,76 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
     }
   }
 
-  TextStyle? get _textStyle => widget.style ?? Theme.of(context).textTheme.titleMedium;
+  TextStyle? get _textStyle =>
+      widget.style ?? Theme.of(context).textTheme.titleMedium;
 
-  // void _handleTap() {
-  //   final TextDirection? textDirection = Directionality.maybeOf(context);
-  //   final EdgeInsetsGeometry menuMargin = ButtonTheme.of(context).alignedDropdown
-  //       ? _kAlignedMenuMargin
-  //       : _kUnalignedMenuMargin;
-  //
-  //   final List<_MenuItem<T>> menuItems = <_MenuItem<T>>[
-  //     for (int index = 0; index < widget.items!.length; index += 1)
-  //       _MenuItem<T>(
-  //         item: widget.items![index],
-  //         onLayout: (Size size) {
-  //           // If [_dropdownRoute] is null and onLayout is called, this means
-  //           // that performLayout was called on a _DropdownRoute that has not
-  //           // left the widget tree but is already on its way out.
-  //           //
-  //           // Since onLayout is used primarily to collect the desired heights
-  //           // of each menu item before laying them out, not having the _DropdownRoute
-  //           // collect each item's height to lay out is fine since the route is
-  //           // already on its way out.
-  //           if (_dropdownRoute == null) {
-  //             return;
-  //           }
-  //
-  //           _dropdownRoute!.itemHeights[index] = size.height;
-  //         },
-  //       ),
-  //   ];
-  //
-  //   final NavigatorState navigator = Navigator.of(context);
-  //   assert(_dropdownRoute == null);
-  //   final RenderBox itemBox = context.findRenderObject()! as RenderBox;
-  //   final Rect itemRect = itemBox.localToGlobal(Offset.zero, ancestor: navigator.context.findRenderObject()) & itemBox.size;
-  //   _dropdownRoute = _DropdownRoute<T>(
-  //     items: menuItems,
-  //     buttonRect: menuMargin.resolve(textDirection).inflateRect(itemRect),
-  //     padding: _kMenuItemPadding.resolve(textDirection),
-  //     selectedIndex: _selectedIndex ?? 0,
-  //     elevation: widget.elevation,
-  //     capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
-  //     style: _textStyle!,
-  //     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  //     itemHeight: widget.itemHeight,
-  //     dropdownColor: widget.dropdownColor,
-  //     menuMaxHeight: widget.menuMaxHeight,
-  //     enableFeedback: widget.enableFeedback ?? true,
-  //     borderRadius: widget.borderRadius,
-  //   );
-  //
-  //   focusNode?.requestFocus();
-  //   navigator.push(_dropdownRoute!).then<void>((_DropdownRouteResult<T>? newValue) {
-  //     _removeDropdownRoute();
-  //     if (!mounted || newValue == null) {
-  //       return;
-  //     }
-  //     widget.onChanged?.call(newValue.result);
-  //   });
-  //
-  //   widget.onTap?.call();
-  // }
+  void _handleTap() {
+    final TextDirection? textDirection = Directionality.maybeOf(context);
+    final EdgeInsetsGeometry menuMargin = _kAlignedMenuMargin;
 
-  // When isDense is true, reduce the height of this button from _kMenuItemHeight to
-  // _kDenseButtonHeight, but don't make it smaller than the text that it contains.
-  // Similarly, we don't reduce the height of the button so much that its icon
-  // would be clipped.
-  double get _denseButtonHeight {
-    final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
-    final double fontSize = _textStyle!.fontSize ?? Theme.of(context).textTheme.titleMedium!.fontSize!;
-    final double scaledFontSize = textScaleFactor * fontSize;
-    return math.max(scaledFontSize, math.max(widget.iconSize, _kDenseButtonHeight));
+    final List<_MenuItem<T>> menuItems = <_MenuItem<T>>[
+      for (int index = 0; index < widget.items!.length; index += 1)
+        _MenuItem<T>(
+          item: widget.items![index],
+          onLayout: (Size size) {
+            // If [_dropdownRoute] is null and onLayout is called, this means
+            // that performLayout was called on a _DropdownRoute that has not
+            // left the widget tree but is already on its way out.
+            //
+            // Since onLayout is used primarily to collect the desired heights
+            // of each menu item before laying them out, not having the _DropdownRoute
+            // collect each item's height to lay out is fine since the route is
+            // already on its way out.
+            if (_dropdownRoute == null) {
+              return;
+            }
+
+            _dropdownRoute!.itemHeights[index] = size.height;
+          },
+        ),
+    ];
+
+    final NavigatorState navigator = Navigator.of(context);
+    assert(_dropdownRoute == null);
+    final RenderBox itemBox = context.findRenderObject()! as RenderBox;
+    final Rect itemRect = itemBox.localToGlobal(Offset(0, 68),
+            ancestor: navigator.context.findRenderObject()) &
+        itemBox.size;
+    _dropdownRoute = _DropdownRoute<T>(
+      items: menuItems,
+      buttonRect: menuMargin.resolve(textDirection).inflateRect(itemRect),
+      padding: _kMenuItemPadding.resolve(textDirection),
+      selectedIndex: _selectedIndex ?? 0,
+      elevation: widget.elevation,
+      capturedThemes:
+          InheritedTheme.capture(from: context, to: navigator.context),
+      style: _textStyle!,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      itemHeight: widget.itemHeight,
+      dropdownColor: widget.dropdownColor,
+      menuMaxHeight: widget.menuMaxHeight,
+      enableFeedback: widget.enableFeedback ?? true,
+      borderRadius: widget.borderRadius,
+    );
+
+    focusNode?.requestFocus();
+    navigator
+        .push(_dropdownRoute!)
+        .then<void>((_DropdownRouteResult<T>? newValue) {
+      _removeDropdownRoute();
+      if (!mounted || newValue == null) {
+        return;
+      }
+      widget.onChanged?.call(newValue.result);
+    });
+
+    widget.onTap?.call();
   }
 
-  Color get _iconColor {
-    // These colors are not defined in the Material Design spec.
-    if (_enabled) {
-      if (widget.iconEnabledColor != null) {
-        return widget.iconEnabledColor!;
-      }
-
-      switch (Theme.of(context).brightness) {
-        case Brightness.light:
-          return Colors.grey.shade700;
-        case Brightness.dark:
-          return Colors.white70;
-      }
-    } else {
-      if (widget.iconDisabledColor != null) {
-        return widget.iconDisabledColor!;
-      }
-
-      switch (Theme.of(context).brightness) {
-        case Brightness.light:
-          return Colors.grey.shade400;
-        case Brightness.dark:
-          return Colors.white10;
-      }
-    }
-  }
-
-  bool get _enabled => widget.items != null && widget.items!.isNotEmpty && widget.onChanged != null;
+  bool get _enabled =>
+      widget.items != null &&
+      widget.items!.isNotEmpty &&
+      widget.onChanged != null;
 
   Orientation _getOrientation(BuildContext context) {
     Orientation? result = MediaQuery.maybeOf(context)?.orientation;
@@ -457,7 +432,9 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
       // If there's no MediaQuery, then use the window aspect to determine
       // orientation.
       final Size size = WidgetsBinding.instance.window.physicalSize;
-      result = size.width > size.height ? Orientation.landscape : Orientation.portrait;
+      result = size.width > size.height
+          ? Orientation.landscape
+          : Orientation.portrait;
     }
     return result;
   }
@@ -469,111 +446,23 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
     final Orientation newOrientation = _getOrientation(context);
     _lastOrientation ??= newOrientation;
     if (newOrientation != _lastOrientation) {
-      // _removeDropdownRoute();
+      _removeDropdownRoute();
       _lastOrientation = newOrientation;
     }
 
-    // The width of the button and the menu are defined by the widest
-    // item and the width of the hint.
-    // We should explicitly type the items list to be a list of <Widget>,
-    // otherwise, no explicit type adding items maybe trigger a crash/failure
-    // when hint and selectedItemBuilder are provided.
-    final List<Widget> items = widget.selectedItemBuilder == null
-        ? (widget.items != null ? List<Widget>.of(widget.items!) : <Widget>[])
-        : List<Widget>.of(widget.selectedItemBuilder!(context));
-
-    int? hintIndex;
-
-    final EdgeInsetsGeometry padding = ButtonTheme.of(context).alignedDropdown
-        ? _kAlignedButtonPadding
-        : _kUnalignedButtonPadding;
-
-    // If value is null (then _selectedIndex is null) then we
-    // display the hint or nothing at all.
-    final Widget innerItemsWidget;
-    if (items.isEmpty) {
-      innerItemsWidget = const SizedBox.shrink();
-    } else {
-      innerItemsWidget = IndexedStack(
-        index: _selectedIndex ?? hintIndex,
-        alignment: widget.alignment,
-        children: widget.isDense ? items : items.map((Widget item) {
-          return widget.itemHeight != null
-              ? SizedBox(height: widget.itemHeight, child: item)
-              : Column(mainAxisSize: MainAxisSize.min, children: <Widget>[item]);
-        }).toList(),
-      );
-    }
-
-    const Icon defaultIcon = Icon(Icons.arrow_drop_down);
-
-    Widget result = DefaultTextStyle(
-      style: _enabled ? _textStyle! : _textStyle!.copyWith(color: Theme.of(context).disabledColor),
-      child: Container(
-        padding: padding.resolve(Directionality.of(context)),
-        height: widget.isDense ? _denseButtonHeight : null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            if (widget.isExpanded)
-              Expanded(child: innerItemsWidget)
-            else
-              innerItemsWidget,
-            IconTheme(
-              data: IconThemeData(
-                color: _iconColor,
-                size: widget.iconSize,
-              ),
-              child: widget.icon ?? defaultIcon,
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (!DropdownButtonHideUnderline.at(context)) {
-      final double bottom = (widget.isDense || widget.itemHeight == null) ? 0.0 : 8.0;
-      result = Stack(
-        children: <Widget>[
-          result,
-          Positioned(
-            left: 0.0,
-            right: 0.0,
-            bottom: bottom,
-            child: Container(
-              height: 1.0,
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFBDBDBD),
-                    width: 0.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    final MouseCursor effectiveMouseCursor = MaterialStateProperty.resolveAs<MouseCursor>(
+    final MouseCursor effectiveMouseCursor =
+        MaterialStateProperty.resolveAs<MouseCursor>(
       MaterialStateMouseCursor.clickable,
       <MaterialState>{
         if (!_enabled) MaterialState.disabled,
       },
     );
 
-    return InkWell(
-      mouseCursor: effectiveMouseCursor,
-      // onTap: _enabled ? _handleTap : null,
-      canRequestFocus: _enabled,
-      borderRadius: widget.borderRadius,
+    return TextField(
       focusNode: focusNode,
       autofocus: widget.autofocus,
-      focusColor: widget.focusColor ?? Theme.of(context).focusColor,
-      enableFeedback: false,
-      child: result,
+      mouseCursor: effectiveMouseCursor,
+      onTap: _enabled ? _handleTap : null,
     );
   }
 }

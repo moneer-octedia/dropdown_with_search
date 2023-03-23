@@ -2,21 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
+part of dropdown_button;
 
 const Duration _kDropdownMenuDuration = Duration(milliseconds: 300);
 const double _kMenuItemHeight = kMinInteractiveDimension;
-const double _kDenseButtonHeight = 24.0;
-const EdgeInsets _kMenuItemPadding = EdgeInsets.symmetric(horizontal: 16.0);
-const EdgeInsetsGeometry _kAlignedButtonPadding = EdgeInsetsDirectional.only(start: 16.0, end: 4.0);
-const EdgeInsets _kUnalignedButtonPadding = EdgeInsets.zero;
-const EdgeInsets _kAlignedMenuMargin = EdgeInsets.zero;
-const EdgeInsetsGeometry _kUnalignedMenuMargin = EdgeInsetsDirectional.only(start: 16.0, end: 24.0);
 
 /// A builder to customize dropdown buttons.
 ///
@@ -381,7 +370,7 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
 // We box the return value so that the return value can be null. Otherwise,
 // canceling the route (which returns null) would get confused with actually
 // returning a real null value.
-@immutable
+// @immutable
 class _DropdownRouteResult<T> {
   const _DropdownRouteResult(this.result);
 
