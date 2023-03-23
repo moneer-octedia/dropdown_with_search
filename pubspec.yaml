@@ -1,4 +1,4 @@
-name: dropdown_with_search
+name: dropdown_with_search_field
 description: Just a fork of DropdownButton to add TextField for search
 version: 0.0.1
 homepage: https://github.com/moneer-octedia/dropdown_with_search

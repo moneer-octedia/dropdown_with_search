@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dropdown_with_search:
+  dropdown_with_search_field:
     path: ../../dropdown_with_search
 
 

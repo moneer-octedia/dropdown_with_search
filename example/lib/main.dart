@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide DropdownButton, DropdownMenuItem;
 
-import 'package:dropdown_with_search/dropdown_with_search.dart';
+import 'package:dropdown_with_search_field/dropdown_with_search_field.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
               children: [
                 Text('Dropdown with search'),
                 const SizedBox(height: 8),
-                DropdownButtonWithSearch<int>(
+                DropdownButtonWithSearchField<int>(
                   isDense: true,
                   value: value,
                   onChanged: (newValue) {
@@ -46,12 +46,12 @@ class _MyAppState extends State<MyApp> {
                     });
                   },
                   items: [
-                    DropdownMenuItemWithSearch(
+                    DropdownMenuItemWithSearchField(
                       child: Text('item one'),
                       searchKeyword: 'item one',
                       value: 0,
                     ),
-                    DropdownMenuItemWithSearch(
+                    DropdownMenuItemWithSearchField(
                       child: Text('item two'),
                       searchKeyword: 'item two',
                       value: 1,
