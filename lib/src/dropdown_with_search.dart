@@ -242,9 +242,9 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
       reverseCurve: const Threshold(0.0),
     );
 
-    searchFieldController.addListener(() { setState(() {
-
-    });});
+    searchFieldController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -314,7 +314,7 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
                       padding: _kMenuItemPadding.copyWith(top: 16, bottom: 8),
                       child: TextField(
                         controller: searchFieldController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.search),
                         ),
                       ),
@@ -466,8 +466,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
     this.menuMaxHeight,
     required this.enableFeedback,
     this.borderRadius,
-  })  : assert(style != null),
-        itemHeights = List<double>.filled(
+  }) : itemHeights = List<double>.filled(
             items.length, itemHeight ?? kMinInteractiveDimension);
 
   final List<_MenuItem<T>> items;
@@ -707,8 +706,7 @@ class _MenuItem<T> extends SingleChildRenderObjectWidget {
     super.key,
     required this.onLayout,
     required this.item,
-  })  : assert(onLayout != null),
-        super(child: item);
+  }) : super(child: item);
 
   final ValueChanged<Size> onLayout;
   final DropdownMenuItemWithSearch<T>? item;
@@ -726,9 +724,7 @@ class _MenuItem<T> extends SingleChildRenderObjectWidget {
 }
 
 class _RenderMenuItem extends RenderProxyBox {
-  _RenderMenuItem(this.onLayout, [RenderBox? child])
-      : assert(onLayout != null),
-        super(child);
+  _RenderMenuItem(this.onLayout, [RenderBox? child]) : super(child);
 
   ValueChanged<Size> onLayout;
 
@@ -750,7 +746,7 @@ class _DropdownMenuItemContainer extends StatelessWidget {
     super.key,
     this.alignment = AlignmentDirectional.centerStart,
     required this.child,
-  }) : assert(child != null);
+  });
 
   /// The widget below this widget in the tree.
   ///
@@ -795,7 +791,7 @@ class DropdownMenuItemWithSearch<T> extends _DropdownMenuItemContainer {
     super.alignment,
     required super.child,
     required this.searchKeyword,
-  }) : assert(child != null);
+  });
 
   /// Called when the dropdown menu item is tapped.
   final VoidCallback? onTap;
@@ -929,11 +925,6 @@ class DropdownButtonWithSearch<T> extends StatefulWidget {
           'Either zero or 2 or more [DropdownMenuItem]s were detected '
           'with the same value',
         ),
-        assert(elevation != null),
-        assert(iconSize != null),
-        assert(isDense != null),
-        assert(isExpanded != null),
-        assert(autofocus != null),
         assert(itemHeight == null || itemHeight >= kMinInteractiveDimension),
         _inputDecoration = null,
         _isEmpty = false,
@@ -982,14 +973,7 @@ class DropdownButtonWithSearch<T> extends StatefulWidget {
           'Either zero or 2 or more [DropdownMenuItem]s were detected '
           'with the same value',
         ),
-        assert(elevation != null),
-        assert(iconSize != null),
-        assert(isDense != null),
-        assert(isExpanded != null),
-        assert(autofocus != null),
         assert(itemHeight == null || itemHeight >= kMinInteractiveDimension),
-        assert(isEmpty != null),
-        assert(isFocused != null),
         _inputDecoration = inputDecoration,
         _isEmpty = isEmpty,
         _isFocused = isFocused;
@@ -1208,11 +1192,12 @@ class DropdownButtonWithSearch<T> extends StatefulWidget {
   final bool _isFocused;
 
   @override
-  State<DropdownButtonWithSearch<T>> createState() => _DropdownButtonWithSearchState<T>();
+  State<DropdownButtonWithSearch<T>> createState() =>
+      _DropdownButtonWithSearchState<T>();
 }
 
-class _DropdownButtonWithSearchState<T> extends State<DropdownButtonWithSearch<T>>
-    with WidgetsBindingObserver {
+class _DropdownButtonWithSearchState<T>
+    extends State<DropdownButtonWithSearch<T>> with WidgetsBindingObserver {
   int? _selectedIndex;
   _DropdownRoute<T>? _dropdownRoute;
   Orientation? _lastOrientation;
@@ -1295,7 +1280,8 @@ class _DropdownButtonWithSearchState<T> extends State<DropdownButtonWithSearch<T
     }
 
     assert(widget.items!
-            .where((DropdownMenuItemWithSearch<T> item) => item.value == widget.value)
+            .where((DropdownMenuItemWithSearch<T> item) =>
+                item.value == widget.value)
             .length ==
         1);
     for (int itemIndex = 0; itemIndex < widget.items!.length; itemIndex++) {
@@ -1552,5 +1538,185 @@ class _DropdownButtonWithSearchState<T> extends State<DropdownButtonWithSearch<T
         ),
       ),
     );
+  }
+}
+
+/// A [FormField] that contains a [DropdownButton].
+///
+/// This is a convenience widget that wraps a [DropdownButton] widget in a
+/// [FormField].
+///
+/// A [Form] ancestor is not required. The [Form] simply makes it easier to
+/// save, reset, or validate multiple fields at once. To use without a [Form],
+/// pass a [GlobalKey] to the constructor and use [GlobalKey.currentState] to
+/// save or reset the form field.
+///
+/// See also:
+///
+///  * [DropdownButton], which is the underlying text field without the [Form]
+///    integration.
+class DropdownButtonFormField<T> extends FormField<T> {
+  /// Creates a [DropdownButton] widget that is a [FormField], wrapped in an
+  /// [InputDecorator].
+  ///
+  /// For a description of the `onSaved`, `validator`, or `autovalidateMode`
+  /// parameters, see [FormField]. For the rest (other than [decoration]), see
+  /// [DropdownButton].
+  ///
+  /// The `items`, `elevation`, `iconSize`, `isDense`, `isExpanded`,
+  /// `autofocus`, and `decoration`  parameters must not be null.
+  DropdownButtonFormField({
+    super.key,
+    required List<DropdownMenuItemWithSearch<T>>? items,
+    DropdownButtonBuilder? selectedItemBuilder,
+    T? value,
+    Widget? hint,
+    Widget? disabledHint,
+    required this.onChanged,
+    VoidCallback? onTap,
+    int elevation = 8,
+    TextStyle? style,
+    Widget? icon,
+    Color? iconDisabledColor,
+    Color? iconEnabledColor,
+    double iconSize = 24.0,
+    bool isDense = true,
+    bool isExpanded = false,
+    double? itemHeight,
+    Color? focusColor,
+    FocusNode? focusNode,
+    bool autofocus = false,
+    Color? dropdownColor,
+    InputDecoration? decoration,
+    super.onSaved,
+    super.validator,
+    AutovalidateMode? autovalidateMode,
+    double? menuMaxHeight,
+    bool? enableFeedback,
+    AlignmentGeometry alignment = AlignmentDirectional.centerStart,
+    BorderRadius? borderRadius,
+    // When adding new arguments, consider adding similar arguments to
+    // DropdownButton.
+  })  : assert(
+          items == null ||
+              items.isEmpty ||
+              value == null ||
+              items.where((DropdownMenuItemWithSearch<T> item) {
+                    return item.value == value;
+                  }).length ==
+                  1,
+          "There should be exactly one item with [DropdownButton]'s value: "
+          '$value. \n'
+          'Either zero or 2 or more [DropdownMenuItem]s were detected '
+          'with the same value',
+        ),
+        assert(itemHeight == null || itemHeight >= kMinInteractiveDimension),
+        decoration = decoration ?? InputDecoration(focusColor: focusColor),
+        super(
+          initialValue: value,
+          autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
+          builder: (FormFieldState<T> field) {
+            final _DropdownButtonFormFieldState<T> state =
+                field as _DropdownButtonFormFieldState<T>;
+            final InputDecoration decorationArg =
+                decoration ?? InputDecoration(focusColor: focusColor);
+            final InputDecoration effectiveDecoration =
+                decorationArg.applyDefaults(
+              Theme.of(field.context).inputDecorationTheme,
+            );
+
+            final bool showSelectedItem = items != null &&
+                items
+                    .where((DropdownMenuItemWithSearch<T> item) =>
+                        item.value == state.value)
+                    .isNotEmpty;
+            bool isHintOrDisabledHintAvailable() {
+              final bool isDropdownDisabled =
+                  onChanged == null || (items == null || items.isEmpty);
+              if (isDropdownDisabled) {
+                return hint != null || disabledHint != null;
+              } else {
+                return hint != null;
+              }
+            }
+
+            final bool isEmpty =
+                !showSelectedItem && !isHintOrDisabledHintAvailable();
+
+            // An unfocusable Focus widget so that this widget can detect if its
+            // descendants have focus or not.
+            return Focus(
+              canRequestFocus: false,
+              skipTraversal: true,
+              child: Builder(builder: (BuildContext context) {
+                return DropdownButtonHideUnderline(
+                  child: DropdownButtonWithSearch<T>._formField(
+                    items: items,
+                    selectedItemBuilder: selectedItemBuilder,
+                    value: state.value,
+                    hint: hint,
+                    disabledHint: disabledHint,
+                    onChanged: onChanged == null ? null : state.didChange,
+                    onTap: onTap,
+                    elevation: elevation,
+                    style: style,
+                    icon: icon,
+                    iconDisabledColor: iconDisabledColor,
+                    iconEnabledColor: iconEnabledColor,
+                    iconSize: iconSize,
+                    isDense: isDense,
+                    isExpanded: isExpanded,
+                    itemHeight: itemHeight,
+                    focusColor: focusColor,
+                    focusNode: focusNode,
+                    autofocus: autofocus,
+                    dropdownColor: dropdownColor,
+                    menuMaxHeight: menuMaxHeight,
+                    enableFeedback: enableFeedback,
+                    alignment: alignment,
+                    borderRadius: borderRadius,
+                    inputDecoration: effectiveDecoration.copyWith(
+                        errorText: field.errorText),
+                    isEmpty: isEmpty,
+                    isFocused: Focus.of(context).hasFocus,
+                  ),
+                );
+              }),
+            );
+          },
+        );
+
+  /// {@macro flutter.material.dropdownButton.onChanged}
+  final ValueChanged<T?>? onChanged;
+
+  /// The decoration to show around the dropdown button form field.
+  ///
+  /// By default, draws a horizontal line under the dropdown button field but
+  /// can be configured to show an icon, label, hint text, and error text.
+  ///
+  /// If not specified, an [InputDecorator] with the `focusColor` set to the
+  /// supplied `focusColor` (if any) will be used.
+  final InputDecoration decoration;
+
+  @override
+  FormFieldState<T> createState() => _DropdownButtonFormFieldState<T>();
+}
+
+class _DropdownButtonFormFieldState<T> extends FormFieldState<T> {
+  @override
+  void didChange(T? value) {
+    super.didChange(value);
+    final DropdownButtonFormField<T> dropdownButtonFormField =
+        widget as DropdownButtonFormField<T>;
+    assert(dropdownButtonFormField.onChanged != null);
+    dropdownButtonFormField.onChanged!(value);
+  }
+
+  @override
+  void didUpdateWidget(DropdownButtonFormField<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue) {
+      setValue(widget.initialValue);
+    }
   }
 }
